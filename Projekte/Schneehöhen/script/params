@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov  7 08:35:37 2019
+
+@author: Schmulius
+"""
+
+import matplotlib.pyplot as plt
+import subprocess
+
+# plot params
+# load plot properties as a module
+
+params_horizontal_single = {
+                        'legend.fontsize' : 9,
+                        'font.size':11,
+                        'font.weight': 'bold',
+                        'xtick.labelsize': 11,
+                        'xtick.bottom': True,
+                        'xtick.top': False,
+                        'xtick.labelbottom':True,
+                        'xtick.direction':'in',
+                        'ytick.direction':'in',
+                        'ytick.labelsize': 11,
+                        'axes.labelsize':11,
+                        'text.usetex': True,
+                        'font.sans-serif': 'Helvetica',
+                        'axes.titlesize': 12,
+                        'axes.titleweight': 'bold',
+                        'figure.figsize': [3.7,3.7],
+                        'figure.frameon':0,
+                        'font.sans-serif':'Helvetica',
+                        'axes.labelpad':1,
+                        'figure.titleweight':'bold',
+                        'figure.titlesize':11,
+                        'grid.linestyle': '--',
+                        'axes.grid': False,
+                        'lines.linewidth': 2,
+                        'xtick.minor.visible': False,
+                        'ytick.minor.visible' : False,
+                        'figure.constrained_layout.use' : True
+                         # False for peak deviation                        
+                        }
+
