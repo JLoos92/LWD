@@ -61,16 +61,19 @@ activity_comments_id_2 = activity_comments.str.findall(r"\d+").dropna()
 snowpack_structure_id_2 = snowpack_structure.str.findall(r"\d+").dropna()
 tendency_id_2 = tendency.str.findall(r"\d+").dropna().reset_index()
 
+
 # Count
 list_2 = []
 for i in range(tendency_id_2.size):
     new = list(map(int, tendency_id_2.TendencyCommentIdsDe[i]))
     list_2.append(new)
+
 # Flat list
 flat_list = []
 for sublist in list_2:
     for item in sublist:
         flat_list.append(item)
+
 
 #Flatlistarray
 flatlist_array =  np.asarray(flat_list)

@@ -201,194 +201,178 @@ def compute_station_corrected():
     
     stations = []
         
-    #for i in list_stations:
-        
-    # for i in list_stations:
-    count = 0
-    
-    
-    with open('Stations/SAGA2.smet', 'r') as f:
-        for line in f:
-     
-            count += 1
-            lines = f.readlines()    
-            station_name = str(lines[2])
-            station = station_name.split('= ')
-            station = station[1].split(':')
-            station_name = station[0]
-            stations.append(station_name)
-        f.close()
-            
-    
-    
-    
-    # pandas    
-    df = pd.read_fwf(r'Stations/SAGA2.smet', header=None)
-    df.columns = ['Data']
-    
-    # Header
-    df_header = df.iloc[:18]
-    
-    # Data
-    df_data = df.iloc[19:]
-    
-    df_data['Date'], df_data['HS'] = df_data['Data'].str.split(' ', 1).str
-    df_data.replace(-999, np.nan)
-    df_data['HS'].astype(float)
-    
-    df_date = pd.to_datetime(df_data['Date'])
-            
-    date_new = df_date.dt.date
-    time_new = df_date.dt.time
-   
-    date_new = date_new
-    data_new = df_data['HS']
+    for i in list_stations:
 
-    df_all = pd.concat([date_new, data_new.reindex(date_new.index)], axis=1)
-    df_all = pd.concat([date_new, data_new], axis=1)
-    df_all["HS"] = pd.to_numeric(df_all["HS"])
-    df_all = df_all.replace(-999.0,np.NaN)
-    df_all = df_all.replace(0.0,np.NaN)
-    
-    mean_days = df_all.groupby(['Date']).mean()
-    mean_days = mean_days.reset_index() 
-    
-    # make mean months
-    mean_days['Date'] = pd.to_datetime(mean_days['Date'])
-    mean_days_dates = pd.to_datetime(mean_days['Date'])
-    df_months = mean_days.groupby(mean_days['Date'].dt.strftime('%B'))['HS'].mean()
-    mean_days_dates = pd.to_datetime(mean_days['Date']).dt.strftime('%Y-%m-%d')
-    # Mean days
-    
-    mean_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].mean()
-    max_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].max()
-    max_m_d = max_m_d.reset_index()
-    max_m_d = max_m_d.drop(max_m_d.index[59])
-    
-    min_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].min()
-    min_m_d = min_m_d.reset_index()
-    min_m_d = min_m_d.drop(max_m_d.index[59])
-    
-    
-    
-    
-    # Date for x-axis
-    x_date = mean_m_d.reset_index()
-    x_date['Date'] = x_date['Date'] + '/2018'
-    x_date['Date'] = x_date['Date'].astype(str)
-    x_date['Date'] = pd.to_datetime(x_date['Date'],errors='coerce')
-    x_date['Date'] = pd.to_datetime(x_date['Date'],format='%Y/%m/%d')
-    x_date = x_date[pd.notnull(x_date['Date'])]
-       
-    date_ind = np.where(station_name == sorted_lw_tote['Stat_NAM'])[0]
-    
-    dates_tote = sorted_lw_tote['Unfall_DAT'][date_ind]
-    dates_tote_2 = pd.to_datetime(dates_tote).dt.strftime('%Y-%m-%d')
-    dates_tote_2 = dates_tote_2.to_frame()
-   
-    
-    dates_tote_day = pd.to_datetime(dates_tote).dt.strftime('%m/%d')
-    dates_tote_day = dates_tote_day.to_frame()
-    
-    # Make dates for x-axis datetime: Unfälle
-    dates_tote_day['Unfall_DAT'] = dates_tote_day['Unfall_DAT'] + '/2018'
-    dates_tote_day['Unfall_DAT'] = dates_tote_day['Unfall_DAT'].astype(str)
-    dates_tote_day['Unfall_DAT'] = pd.to_datetime(dates_tote_day['Unfall_DAT'],errors='coerce')
-    dates_tote_day['Unfall_DAT'] = pd.to_datetime(dates_tote_day['Unfall_DAT'],format='%Y/%m/%d')
-    
-    thresh = pd.to_datetime('2018-10-31',format='%Y-%m-%d')
-    
+        count = 0
         
         
-    new = dates_tote_day > thresh
-     
-    new_ind = new.index[new['Unfall_DAT']==True].tolist()
-     
-     # make new years
-    for i in new_ind:
-        dates_tote_day.loc[i] = dates_tote_day.loc[i].apply(lambda x: x.replace(year=2017))
+        with open('Stations/' + i, 'r') as f:
+            for line in f:
          
+                count += 1
+                lines = f.readlines()    
+                station_name = str(lines[2])
+                station = station_name.split('= ')
+                station = station[1].split(':')
+                station_name = station[0]
+                stations.append(station_name)
+            f.close()
+                
+        
+        
+        
+        # pandas    
+        df = pd.read_fwf(r'Stations/' + i, header=None)
+        df.columns = ['Data']
+        
+        # Header
+        df_header = df.iloc[:18]
+        
+        # Data
+        df_data = df.iloc[19:]
+        
+        df_data['Date'], df_data['HS'] = df_data['Data'].str.split(' ', 1).str
+        df_data.replace(-999, np.nan)
+        df_data['HS'].astype(float)
+        
+        df_date = pd.to_datetime(df_data['Date'])
+                
+        date_new = df_date.dt.date
+        time_new = df_date.dt.time
+       
+        date_new = date_new
+        data_new = df_data['HS']
+    
+        df_all = pd.concat([date_new, data_new.reindex(date_new.index)], axis=1)
+        df_all = pd.concat([date_new, data_new], axis=1)
+        df_all["HS"] = pd.to_numeric(df_all["HS"])
+        df_all = df_all.replace(-999.0,np.NaN)
+        df_all = df_all.replace(0.0,np.NaN)
+        
+        mean_days = df_all.groupby(['Date']).mean()
+        mean_days = mean_days.reset_index() 
+        
+        # make mean months
+        mean_days['Date'] = pd.to_datetime(mean_days['Date'])
+        mean_days_dates = pd.to_datetime(mean_days['Date'])
+        df_months = mean_days.groupby(mean_days['Date'].dt.strftime('%B'))['HS'].mean()
+        mean_days_dates = pd.to_datetime(mean_days['Date']).dt.strftime('%Y-%m-%d')
+        # Mean days
+        
+        mean_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].mean()
+        max_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].max()
+        max_m_d = max_m_d.reset_index()
+        max_m_d = max_m_d.drop(max_m_d.index[59])
+        
+        min_m_d = mean_days.groupby(mean_days['Date'].dt.strftime('%m/%d'))['HS'].min()
+        min_m_d = min_m_d.reset_index()
+        min_m_d = min_m_d.drop(max_m_d.index[59])
+        
+        
+        
+        
+        # Date for x-axis
+        x_date = mean_m_d.reset_index()
+        x_date['Date'] = x_date['Date'] + '/2018'
+        x_date['Date'] = x_date['Date'].astype(str)
+        x_date['Date'] = pd.to_datetime(x_date['Date'],errors='coerce')
+        x_date['Date'] = pd.to_datetime(x_date['Date'],format='%Y/%m/%d')
+        x_date = x_date[pd.notnull(x_date['Date'])]
+           
+        date_ind = np.where(station_name == sorted_lw_tote['Stat_NAM'])[0]
+        
+        dates_tote = sorted_lw_tote['Unfall_DAT'][date_ind]
+        dates_tote_2 = pd.to_datetime(dates_tote).dt.strftime('%Y-%m-%d')
+        dates_tote_2 = dates_tote_2.to_frame()
+       
+        
+        dates_tote_day = pd.to_datetime(dates_tote).dt.strftime('%m/%d')
+        dates_tote_day = dates_tote_day.to_frame()
+        
+        # Make dates for x-axis datetime: Unfälle
+        dates_tote_day['Unfall_DAT'] = dates_tote_day['Unfall_DAT'] + '/2018'
+        dates_tote_day['Unfall_DAT'] = dates_tote_day['Unfall_DAT'].astype(str)
+        dates_tote_day['Unfall_DAT'] = pd.to_datetime(dates_tote_day['Unfall_DAT'],errors='coerce')
+        dates_tote_day['Unfall_DAT'] = pd.to_datetime(dates_tote_day['Unfall_DAT'],format='%Y/%m/%d')
+        
+        thresh = pd.to_datetime('2018-10-31',format='%Y-%m-%d')
+        
+            
+            
+        new = dates_tote_day > thresh
          
-       
-       
-    
-    array_hs = []
-    for j in range(dates_tote_2.size):
+        new_ind = new.index[new['Unfall_DAT']==True].tolist()
+         
+         # make new years
+        for i in new_ind:
+            dates_tote_day.loc[i] = dates_tote_day.loc[i].apply(lambda x: x.replace(year=2017))
+             
+             
+         # hydrological year    
+        x_date_new = x_date.tail(92)
+        x_date_new = x_date_new['Date'].map(lambda x: x.replace(year=2017))
+        x_date_new = x_date_new.append(x_date['Date'].head(181))  
         
-        ind = np.where(dates_tote_2.iloc[j][0]==mean_days_dates)
-        ind = ind[0]
-        ind_2 = mean_days['HS'][ind]
-        ind_2 = ind_2.iloc[0]
+         # hydrological year    
+        x_hs_new = x_date['HS'].tail(92)
+        x_hs_new = x_hs_new.append(x_date['HS'].head(181))       
+           
         
-        array_hs.append(ind_2)
-        
-     
-#        
-    # hydrological year    
-    x_date_new = x_date.tail(92)
-    x_date_new = x_date_new['Date'].map(lambda x: x.replace(year=2017))
-    x_date_new = x_date_new.append(x_date['Date'].head(181))  
-    
-     # hydrological year    
-    x_hs_new = x_date['HS'].tail(92)
-    x_hs_new = x_hs_new.append(x_date['HS'].head(181))    
-#   
-    max_m_d_new = max_m_d.tail(92)
-    max_m_d_new = max_m_d_new.append(max_m_d.head(181)) 
-#    
-    min_m_d_new = min_m_d.tail(92)
-    min_m_d_new = min_m_d_new.append(min_m_d.head(181))  
-#    
-    # annotation
-    annot_dates = dates_tote.astype(str)
-    annot_dates = annot_dates.to_frame()
-    annot_dates_list = annot_dates['Unfall_DAT'].tolist()
-    
-    # Plots
-    fig, ax = plt.subplots(1)   
-    ax.plot(x_date_new,x_hs_new,'k-',linewidth=0.7, label = 'Mittlere Schneehöhe')
-    ax_2 = ax.plot(x_date_new,max_m_d_new['HS'],'k-',linewidth=0.5,alpha=0.5,label = '_nolegend_')
-    ax_3 = ax.plot(x_date_new,min_m_d_new['HS'],'k-',linewidth=0.5,alpha=0.5,label = '_nolegend_')
-    ax.plot(dates_tote_day,array_hs,'b*',linewidth=0.5,alpha=0.9,label = 'Lawinentote')
-    
-    # fill inbetween
-    x_axis = x_date_new.values
-    ax.fill_between(x_axis, min_m_d_new['HS'], max_m_d_new['HS'], facecolor='grey', alpha=0.2)
-    xlim_1 = pd.to_datetime('2018-10-31',format = '%Y-%m-%d')
-    xlim_2 = pd.to_datetime('2018-06-30',format = '%Y-%m-%d')
+        array_hs = []
+        array_hs_2 = []
+        for j in range(dates_tote_2.size):
       
-    # labels titles ticks
-    ax.set_xlabel('Monat/Tag',fontsize=10)
-    ax.set_ylabel('HS [m]',fontsize=10)
-    ax.set_title('Schneehöhe ' + station_name,fontsize=14)   
-    ax.tick_params(axis='both', which='major', labelsize=8,direction='in', length=6, width=3)
-   # ax.set_xlim(xlim_2,xlim_1)
-    #ax1.legend(['Mittlere Schneehöhe'],loc='upper right',frameon=False) 
-    leg = ax.legend(frameon = True)
+            ind = np.where(dates_tote_2.iloc[j][0]==mean_days_dates)
+            ind = ind[0]
+            ind_2 = mean_days['HS'][ind]
+            ind_2 = ind_2.iloc[0]
+            
+            array_hs.append(ind_2)
+            
+        
+        print(array_hs_2)
+        max_m_d_new = max_m_d.tail(92)
+        max_m_d_new = max_m_d_new.append(max_m_d.head(181)) 
+    #    
+        min_m_d_new = min_m_d.tail(92)
+        min_m_d_new = min_m_d_new.append(min_m_d.head(181))  
+    #    
+        # annotation
+        annot_dates = dates_tote.astype(str)
+        annot_dates = annot_dates.to_frame()
+        annot_dates_list = annot_dates['Unfall_DAT'].tolist()
+        
+        # Plots
+        fig, ax = plt.subplots(1)   
+        ax.plot(x_date_new,x_hs_new,'k-',linewidth=0.7, label = 'Mittlere Schneehöhe')
+        ax_2 = ax.plot(x_date_new,max_m_d_new['HS'],'k-',linewidth=0.5,alpha=0.5,label = '_nolegend_')
+        ax_3 = ax.plot(x_date_new,min_m_d_new['HS'],'k-',linewidth=0.5,alpha=0.5,label = '_nolegend_')
+        ax.plot(dates_tote_day,array_hs,'b*',linewidth=0.5,alpha=0.9,label = 'Lawinentote')
+        
+        # fill inbetween
+        x_axis = x_date_new.values
+        ax.fill_between(x_axis, min_m_d_new['HS'], max_m_d_new['HS'], facecolor='grey', alpha=0.2)
+        xlim_1 = pd.to_datetime('2018-10-31',format = '%Y-%m-%d')
+        xlim_2 = pd.to_datetime('2018-06-30',format = '%Y-%m-%d')
+          
+        # labels titles ticks
+        ax.set_xlabel('Monat/Tag',fontsize=10)
+        ax.set_ylabel('HS [m]',fontsize=10)
+        ax.set_title('Schneehöhe ' + station_name,fontsize=14)   
+        ax.tick_params(axis='both', which='major', labelsize=8,direction='in', length=6, width=3)
+        leg = ax.legend(frameon = True)
     
+        
+        # Define the date format
+        date_form = DateFormatter("%m/%d")
+        ax.xaxis.set_major_formatter(date_form)
+        fig.tight_layout()
+          
+        # Save figures
+        path = str('figures/')
+        fname_pdf = str('Station' + station_name + '.pdf')
+        fname_png = str('Station' + station_name + '.png')    
+        fig.savefig(path + fname_pdf, format = 'pdf',dpi=1000,bbox_inches = 'tight') 
+        fig.savefig(path + fname_png, format = 'png',dpi=1000,bbox_inches = 'tight') 
+        
     
-    #################################
-#    ax.annotate('Test', (mdates.date2num(dates_tote_day.iloc[2]), array_hs[1]), xytext=(15, 15), 
-#            textcoords='offset points', arrowprops=dict(arrowstyle='-|>'))
-    
-    
-    #ax.text(dates_tote_day.iloc[2],array_hs[1], 'hallooo')
-#    for i,type in enumerate(annot_dates_list):
-#        ax.text(dates_tote_day.iloc[i],array_hs[i], type, fontsize=9)
-#    
-    ax.annotate(annot_dates_list[1],dates_tote_day.iloc[1],array_hs[1])
-   
-    
-    # Define the date format
-    date_form = DateFormatter("%m/%d")
-    ax.xaxis.set_major_formatter(date_form)
-    fig.tight_layout()
-      
-    # Save figures
-    path = str('figures/')
-    fname_pdf = str('Station' + station_name + '.pdf')
-    fname_png = str('Station' + station_name + '.png')    
-    fig.savefig(path + fname_pdf, format = 'pdf',dpi=1000,bbox_inches = 'tight') 
-    fig.savefig(path + fname_png, format = 'png',dpi=1000,bbox_inches = 'tight') 
-    
-
